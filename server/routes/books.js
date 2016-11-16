@@ -1,7 +1,34 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-var connectionString = 'postgres://localhost:5432/sigma';
+var connectionString = 'postgres://localhost:5432/node_books';
+
+router.get('/filter/:genre', function(req, res) {
+  var filter = req.params.genre;
+
+  console.log('get request - filter:', filter);
+  // get books from DB
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log('connection error - filter: ', err);
+      res.sendStatus(500);
+    }
+
+    client.query('SELECT * FROM books WHERE genre = $1', [filter], function(err, result) {
+      done(); // close the connection.
+
+      // console.log('the client!:', client);
+
+      if(err) {
+        console.log('select query error - filter: ', err);
+        res.sendStatus(500);
+      }
+      res.send(result.rows);
+
+    });
+
+  });
+});
 
 router.get('/', function(req, res) {
   console.log('get request');
@@ -27,6 +54,7 @@ router.get('/', function(req, res) {
 
   });
 });
+
 
 router.post('/', function(req, res) {
   var newBook = req.body;

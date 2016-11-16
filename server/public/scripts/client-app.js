@@ -1,13 +1,37 @@
 $(document).ready(function () {
     getBooks();
-
     // add a book
     $('#book-submit').on('click', postBook);
     // delete a book
     $("#book-list").on('click', '.delete', deleteBook);
     // update a book
     $("#book-list").on('click', '.update', updateBook);
+    $("select").change(function() {
+      var selectedGenre = $(this).children(":selected").val();
+      if(selectedGenre == 'none') {
+        getBooks(); //no filter
+      } else {
+        filterBooks(selectedGenre);
+      }
+    });
 });
+
+function filterBooks(genre) {
+  console.log('genre filter get init:', genre);
+  $.ajax({
+    type: 'GET',
+    url: '/books/filter/' + genre,
+    success: function(books) {
+      console.log('filter success:', books);
+      appendBooks(books);
+    },
+    error: function() {
+      console.log('Database filter error');
+    }
+
+  })
+}
+
 /**
  * Retrieve books from server and append to DOM
  */
@@ -50,7 +74,7 @@ function postBook() {
     error: function() {
       console.log('could not post a new book');
     }
-  })
+  });
 
 }
 

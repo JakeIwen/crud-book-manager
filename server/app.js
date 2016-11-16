@@ -7,7 +7,8 @@ var books = require('./routes/books');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Our routes
-app.use('/books', books);
+app.use('/books/filter/', books);
+app.use('/books/', books);
 
 // Catchall route
 app.get('/', function (req, res) {
